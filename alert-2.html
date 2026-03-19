@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Alert — P.S. I Crepe You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #ff4d8d;
+      font-family: 'DM Sans', sans-serif;
+      color: #3d0020;
+    }
+
+    .rc-header {
+      background: linear-gradient(135deg, #ff1a6e 0%, #ff5fa0 50%, #ff1a6e 100%);
+      padding: 36px 24px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .rc-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.05) 20px, rgba(255,255,255,0.05) 40px);
+    }
+    .rc-header-eyebrow { font-size: 10px; letter-spacing: 5px; color: #ffe0ee; text-transform: uppercase; margin-bottom: 8px; position: relative; }
+    .rc-header-title { font-family: 'Playfair Display', serif; font-size: 30px; color: #fff; font-weight: 700; position: relative; }
+    .rc-header-sub { font-size: 11px; color: #ffe0ee; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; position: relative; }
+
+    .rc-body { max-width: 520px; margin: 0 auto; padding: 28px 18px 60px; }
+
+    .rc-card {
+      background: #fff0f5;
+      border: 1px solid #ffb3d0;
+      border-radius: 18px;
+      padding: 30px 26px;
+      box-shadow: 0 8px 40px rgba(255,20,100,0.2);
+    }
+
+    .rc-section-title {
+      font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      color: #ff1a6e; margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #ffcce0;
+    }
+    .rc-section-title:first-child { margin-top: 0; }
+
+    .rc-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #d4336e; margin-bottom: 8px; margin-top: 16px; }
+
+    .rc-input {
+      width: 100%; background: #fff; border: 1.5px solid #ffb3d0; border-radius: 10px;
+      padding: 14px 16px; font-size: 16px; font-family: 'DM Sans', sans-serif; color: #3d0020;
+      outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
+    }
+    .rc-input:focus { border-color: #ff1a6e; }
+    .rc-input::placeholder { color: #f0a0c0; }
+
+    /* Alert type cards */
+    .alert-types { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+    .alert-type-btn {
+      background: #fff;
+      border: 2px solid #ffb3d0;
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .alert-type-btn:hover { border-color: #ff5fa0; background: #fff5f8; }
+    .alert-type-btn.selected { border-color: #ff1a6e; background: #ffe0ee; }
+    .alert-type-btn .alert-icon { font-size: 26px; margin-bottom: 6px; }
+    .alert-type-btn .alert-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #d4336e; line-height: 1.3; }
+    .alert-type-btn.selected .alert-label { color: #ff1a6e; }
+
+    /* Urgency indicator */
+    .urgency-bar { display: flex; gap: 8px; margin-top: 4px; }
+    .urgency-opt {
+      flex: 1; padding: 12px 8px; border-radius: 10px; border: 2px solid #ffb3d0;
+      text-align: center; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+      transition: all 0.15s; background: #fff; color: #d4336e;
+    }
+    .urgency-opt:hover { border-color: #ff5fa0; }
+    .urgency-opt.selected-low  { background: #d4f5e4; border-color: #7addb0; color: #1a7a45; }
+    .urgency-opt.selected-mid  { background: #fff3cd; border-color: #ffc107; color: #856404; }
+    .urgency-opt.selected-high { background: #fde8e8; border-color: #f5a0a0; color: #c0392b; }
+
+    textarea.rc-input { resize: none; }
+
+    .rc-submit-btn {
+      width: 100%; background: linear-gradient(135deg, #ff1a6e, #e0005a); color: #fff;
+      border: none; border-radius: 12px; padding: 18px 0; font-size: 15px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; letter-spacing: 2px;
+      text-transform: uppercase; margin-top: 22px; transition: opacity 0.2s, transform 0.1s;
+    }
+    .rc-submit-btn:disabled { background: #ffcce0; color: #f090b8; cursor: not-allowed; }
+    .rc-submit-btn:not(:disabled):active { transform: scale(0.99); }
+
+    /* Success */
+    .rc-success-icon { font-size: 52px; text-align: center; margin-bottom: 14px; }
+    .rc-success-title { font-family: 'Playfair Display', serif; font-size: 26px; color: #3d0020; font-weight: 700; text-align: center; margin-bottom: 6px; }
+    .rc-success-sub { text-align: center; color: #d4336e; font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+
+    .rc-alert-badge {
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;
+      border: 1px solid transparent; text-align: center;
+    }
+    .rc-alert-badge .badge-icon { font-size: 32px; margin-bottom: 8px; }
+    .rc-alert-badge .badge-type { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+    .rc-alert-badge .badge-item { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+
+    .rc-summary { background: #ffe0ee; border: 1px solid #ffb3d0; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .rc-summary-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #ffcce0; font-size: 14px; }
+    .rc-summary-row:last-child { border-bottom: none; }
+    .rc-summary-key { color: #c0336a; }
+    .rc-summary-val { color: #3d0020; font-weight: 500; }
+
+    .rc-reset-btn {
+      background: #ffe0ee; color: #e0005a; border: 1px solid #ffb3d0; border-radius: 12px;
+      padding: 14px 36px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; display: block; margin: 0 auto; letter-spacing: 1px; text-transform: uppercase; transition: background 0.2s;
+    }
+    .rc-reset-btn:hover { background: #ffd0e8; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="rc-header">
+    <div class="rc-header-eyebrow">P.S. I Crepe You — Riverside</div>
+    <div class="rc-header-title">Staff Alert</div>
+    <div class="rc-header-sub">Report an Issue</div>
+  </div>
+
+  <div class="rc-body">
+
+    <div class="rc-card" id="form-card">
+
+      <div class="rc-section-title">Who's Reporting</div>
+
+      <label class="rc-label">Your First Name</label>
+      <input class="rc-input" type="text" id="inp-name" placeholder="First name" oninput="checkReady()" />
+
+      <div class="rc-section-title">Alert Type</div>
+      <div class="alert-types">
+        <div class="alert-type-btn" onclick="selectType('running-low', this)">
+          <div class="alert-icon">📉</div>
+          <div class="alert-label">Running Low</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType('out-of-stock', this)">
+          <div class="alert-icon">🚨</div>
+          <div class="alert-label">Completely Out</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType('broken', this)">
+          <div class="alert-icon">🔧</div>
+          <div class="alert-label">Broken / Not Working</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType('other', this)">
+          <div class="alert-icon">📝</div>
+          <div class="alert-label">Other / General Note</div>
+        </div>
+      </div>
+
+      <div class="rc-section-title">Details</div>
+
+      <label class="rc-label" id="item-label">Item / Equipment Name</label>
+      <input class="rc-input" type="text" id="inp-item" placeholder="e.g. Nutella, waffle maker, cups..." oninput="checkReady()" />
+
+      <label class="rc-label" style="margin-top:18px">Additional Notes</label>
+      <textarea class="rc-input" id="inp-notes" placeholder="Any extra details for the manager..." rows="3"></textarea>
+
+      <button class="rc-submit-btn" id="submit-btn" disabled onclick="handleSubmit()">
+        Send Alert
+      </button>
+    </div>
+
+    <div class="rc-card hidden" id="success-card">
+      <div class="rc-success-icon">✅</div>
+      <div class="rc-success-title">Alert Sent!</div>
+      <div class="rc-success-sub">Management has been notified.<br/>Thank you for keeping us in the loop!</div>
+
+      <div class="rc-alert-badge" id="badge"></div>
+
+      <div class="rc-summary" id="summary-rows"></div>
+
+      <button class="rc-reset-btn" onclick="handleReset()">Report Another Issue</button>
+    </div>
+
+  </div>
+
+  <script>
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbx7jgXBNn1joDsZ6QmfbCn5dGja4AWi6IKvSWb0gWD72D2i4wWbKPPRGv1p3HMu__coeg/exec"
+
+    let selectedType = null
+
+    const typeConfig = {
+      'running-low':  { icon: '📉', label: 'Running Low',          bg: '#fff3cd', border: '#ffc107', color: '#856404' },
+      'out-of-stock': { icon: '🚨', label: 'Completely Out',        bg: '#fde8e8', border: '#f5a0a0', color: '#c0392b' },
+      'broken':       { icon: '🔧', label: 'Broken / Not Working',  bg: '#ffe8d4', border: '#ffb07a', color: '#b85c00' },
+      'other':        { icon: '📝', label: 'General Note',          bg: '#e8f0ff', border: '#a0b8f5', color: '#1a3fa8' },
+    }
+
+    function selectType(type, el) {
+      document.querySelectorAll('.alert-type-btn').forEach(b => b.classList.remove('selected'))
+      el.classList.add('selected')
+      selectedType = type
+      checkReady()
+    }
+
+    function checkReady() {
+      const name = document.getElementById('inp-name').value.trim()
+      const item = document.getElementById('inp-item').value.trim()
+      document.getElementById('submit-btn').disabled = !(name && item && selectedType)
+    }
+
+    async function handleSubmit() {
+      const name  = document.getElementById('inp-name').value.trim()
+      const item  = document.getElementById('inp-item').value.trim()
+      const notes = document.getElementById('inp-notes').value.trim()
+      const timestamp = new Date().toLocaleString()
+
+      const cfg = typeConfig[selectedType]
+
+      const entry = {
+        name,
+        alertType: cfg.label,
+        alertTypeKey: selectedType,
+        item,
+        notes,
+        location: 'Riverside',
+        timestamp
+      }
+
+      const btn = document.getElementById('submit-btn')
+      btn.disabled = true
+      btn.textContent = 'Sending...'
+
+      try {
+        await fetch(SHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        })
+      } catch(e) {}
+
+      showSuccess(entry, cfg)
+    }
+
+    function showSuccess(entry, cfg) {
+      document.getElementById('form-card').classList.add('hidden')
+      document.getElementById('success-card').classList.remove('hidden')
+
+      // Badge
+      const badge = document.getElementById('badge')
+      badge.style.background = cfg.bg
+      badge.style.borderColor = cfg.border
+      badge.innerHTML = `
+        <div class="badge-icon">${cfg.icon}</div>
+        <div class="badge-type" style="color:${cfg.color}">${cfg.label}</div>
+        <div class="badge-item" style="color:${cfg.color}">${entry.item}</div>
+      `
+
+      // Summary
+      const rows = [
+        ['Reported by', entry.name],
+        ['Location', entry.location],
+        ['Time', entry.timestamp],
+      ]
+      if (entry.notes) rows.push(['Notes', entry.notes])
+
+      document.getElementById('summary-rows').innerHTML = rows.map(([k, v]) =>
+        `<div class="rc-summary-row"><span class="rc-summary-key">${k}</span><span class="rc-summary-val">${v}</span></div>`
+      ).join('')
+    }
+
+    function handleReset() {
+      document.getElementById('success-card').classList.add('hidden')
+      document.getElementById('form-card').classList.remove('hidden')
+      document.getElementById('inp-name').value = ''
+      document.getElementById('inp-item').value = ''
+      document.getElementById('inp-notes').value = ''
+      document.querySelectorAll('.alert-type-btn').forEach(b => b.classList.remove('selected'))
+      selectedType = null
+      const btn = document.getElementById('submit-btn')
+      btn.disabled = true
+      btn.textContent = 'Send Alert'
+    }
+  </script>
+
+</body>
+</html>
