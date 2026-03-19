@@ -132,7 +132,7 @@
 <body>
 
   <div class="rc-header">
-    <div class="rc-header-eyebrow">P.S. I Crepe You — Riverside</div>
+    <div class="rc-header-eyebrow">P.S. I Crepe You</div>
     <div class="rc-header-title">Staff Alert</div>
     <div class="rc-header-sub">Report an Issue</div>
   </div>
@@ -145,6 +145,22 @@
 
       <label class="rc-label">Your First Name</label>
       <input class="rc-input" type="text" id="inp-name" placeholder="First name" oninput="checkReady()" />
+
+      <label class="rc-label" style="margin-top:16px">Location</label>
+      <div class="alert-types" style="grid-template-columns: 1fr 1fr 1fr; margin-top:4px">
+        <div class="alert-type-btn location-btn" onclick="selectLocation('Riverside', this)">
+          <div class="alert-icon">📍</div>
+          <div class="alert-label">Riverside</div>
+        </div>
+        <div class="alert-type-btn location-btn" onclick="selectLocation('Gallery at Tyler', this)">
+          <div class="alert-icon">📍</div>
+          <div class="alert-label">Gallery at Tyler</div>
+        </div>
+        <div class="alert-type-btn location-btn" onclick="selectLocation('Rancho Cucamonga', this)">
+          <div class="alert-icon">📍</div>
+          <div class="alert-label">Rancho</div>
+        </div>
+      </div>
 
       <div class="rc-section-title">Alert Type</div>
       <div class="alert-types">
@@ -194,15 +210,23 @@
   </div>
 
   <script>
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycby1demKMenz6dF8tOB5J2LNMrdd_uax45cgFt4zZoFNhgDVhebf0X0VkPNE1Ik4XJEnJQ/exec"
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbxIbDu3RR-MVqbezmpzph7gpXd6mAXt1UKOd6CLrD2Tk33QWXmga_xshmwn7otwIZvrow/exec"
 
     let selectedType = null
+    let selectedLocation = null
 
     const typeConfig = {
       'running-low':  { icon: '📉', label: 'Running Low',          bg: '#fff3cd', border: '#ffc107', color: '#856404' },
       'out-of-stock': { icon: '🚨', label: 'Completely Out',        bg: '#fde8e8', border: '#f5a0a0', color: '#c0392b' },
       'broken':       { icon: '🔧', label: 'Broken / Not Working',  bg: '#ffe8d4', border: '#ffb07a', color: '#b85c00' },
       'other':        { icon: '📝', label: 'General Note',          bg: '#e8f0ff', border: '#a0b8f5', color: '#1a3fa8' },
+    }
+
+    function selectLocation(loc, el) {
+      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('selected'))
+      el.classList.add('selected')
+      selectedLocation = loc
+      checkReady()
     }
 
     function selectType(type, el) {
@@ -215,7 +239,7 @@
     function checkReady() {
       const name = document.getElementById('inp-name').value.trim()
       const item = document.getElementById('inp-item').value.trim()
-      document.getElementById('submit-btn').disabled = !(name && item && selectedType)
+      document.getElementById('submit-btn').disabled = !(name && item && selectedType && selectedLocation)
     }
 
     async function handleSubmit() {
@@ -232,7 +256,7 @@
         alertTypeKey: selectedType,
         item,
         notes,
-        location: 'Riverside',
+        location: selectedLocation,
         timestamp
       }
 
@@ -256,7 +280,6 @@
       document.getElementById('form-card').classList.add('hidden')
       document.getElementById('success-card').classList.remove('hidden')
 
-      // Badge
       const badge = document.getElementById('badge')
       badge.style.background = cfg.bg
       badge.style.borderColor = cfg.border
@@ -266,7 +289,6 @@
         <div class="badge-item" style="color:${cfg.color}">${entry.item}</div>
       `
 
-      // Summary
       const rows = [
         ['Reported by', entry.name],
         ['Location', entry.location],
@@ -286,7 +308,9 @@
       document.getElementById('inp-item').value = ''
       document.getElementById('inp-notes').value = ''
       document.querySelectorAll('.alert-type-btn').forEach(b => b.classList.remove('selected'))
+      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('selected'))
       selectedType = null
+      selectedLocation = null
       const btn = document.getElementById('submit-btn')
       btn.disabled = true
       btn.textContent = 'Send Alert'
